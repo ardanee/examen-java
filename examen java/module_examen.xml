@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="module_examen" default="compile.module.examen">
+  <dirname property="module.examen.basedir" file="${ant.file.module_examen}"/>
+  
+  <property name="module.jdk.home.examen" value="${project.jdk.home}"/>
+  <property name="module.jdk.bin.examen" value="${project.jdk.bin}"/>
+  <property name="module.jdk.classpath.examen" value="${project.jdk.classpath}"/>
+  
+  <property name="compiler.args.examen" value="-encoding UTF-8 -source 8 -target 8 ${compiler.args}"/>
+  
+  <property name="examen.output.dir" value="${module.examen.basedir}/out/production/examen"/>
+  <property name="examen.testoutput.dir" value="${module.examen.basedir}/out/test/examen"/>
+  
+  <path id="examen.module.bootclasspath">
+    <!-- Paths to be included in compilation bootclasspath -->
+  </path>
+  
+  <path id="examen.module.production.classpath">
+    <path refid="${module.jdk.classpath.examen}"/>
+  </path>
+  
+  <path id="examen.runtime.production.module.classpath">
+    <pathelement location="${examen.output.dir}"/>
+  </path>
+  
+  <path id="examen.module.classpath">
+    <path refid="${module.jdk.classpath.examen}"/>
+    <pathelement location="${examen.output.dir}"/>
+  </path>
+  
+  <path id="examen.runtime.module.classpath">
+    <pathelement location="${examen.testoutput.dir}"/>
+    <pathelement location="${examen.output.dir}"/>
+  </path>
+  
+  
+  <patternset id="excluded.from.module.examen">
+    <patternset refid="ignored.files"/>
+  </patternset>
+  
+  <patternset id="excluded.from.compilation.examen">
+    <patternset refid="excluded.from.module.examen"/>
+  </patternset>
+  
+  <path id="examen.module.sourcepath">
+    <dirset dir="${module.examen.basedir}">
+      <include name="src"/>
+    </dirset>
+  </path>
+  
+  
+  <target name="compile.module.examen" depends="compile.module.examen.production,compile.module.examen.tests" description="Compile module examen"/>
+  
+  <target name="compile.module.examen.production" depends="register.custom.compilers" description="Compile module examen; production classes">
+    <mkdir dir="${examen.output.dir}"/>
+    <javac2 destdir="${examen.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.examen}/javac">
+      <compilerarg line="${compiler.args.examen}"/>
+      <bootclasspath refid="examen.module.bootclasspath"/>
+      <classpath refid="examen.module.production.classpath"/>
+      <src refid="examen.module.sourcepath"/>
+      <patternset refid="excluded.from.compilation.examen"/>
+    </javac2>
+    
+    <copy todir="${examen.output.dir}">
+      <fileset dir="${module.examen.basedir}/src">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="compile.module.examen.tests" depends="register.custom.compilers,compile.module.examen.production" description="compile module examen; test classes" unless="skip.tests"/>
+  
+  <target name="clean.module.examen" description="cleanup module">
+    <delete dir="${examen.output.dir}"/>
+    <delete dir="${examen.testoutput.dir}"/>
+  </target>
+</project>
